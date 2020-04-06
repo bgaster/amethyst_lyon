@@ -1,44 +1,42 @@
-//! Custom Render Pass example
-
-mod pass;
-mod utils;
-
-use crate::pass::{RenderLyon};
-use crate::utils::{Mesh, VertexType};
+//! Description: 
+//! 
+//! Basic example showing usage for using Lyon with Amethyst.
+//! 
+//! Copyright © 2020 Benedict Gaster. All rights reserved.
+//! 
+use amethyst_lyon::{
+    RenderLyon,
+    utils::{Mesh, VertexType}
+};
 
 use amethyst::{
     input::{
-        is_close_requested, is_key_down, InputBundle, InputEvent, ScrollDirection, StringBindings,
+        is_close_requested, is_key_down, InputBundle, InputEvent, StringBindings,
     },
     prelude::*,
     renderer::{
-        camera::Projection,
         plugins::{RenderFlat2D, RenderToWindow}, 
         types::DefaultBackend, 
         RenderingBundle,
-        Camera, ActiveCamera
     },
-    ecs::{Entity},
-    core::{Transform},
     utils::application_root_dir,
     winit::VirtualKeyCode,
-    window::ScreenDimensions,
 };
 
 extern crate lyon;
 use lyon::math::{point, Point};
 use lyon::path::Path;
-use lyon::path::builder::*;
 use lyon::tessellation::*;
 
-use log::info;
-
 #[derive(Debug, Default)]
-pub struct CustomShaderState;
+pub struct BasicUsageState;
 
-impl SimpleState for CustomShaderState {
+impl SimpleState for BasicUsageState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+
+        // Tesserlate a few shapes and add to the world. The first two are attached to the same
+        // mesh, while the 2nd one is added to another one.
 
         // Hollow triangle
         let mut builder = Path::builder();
@@ -148,7 +146,7 @@ impl SimpleState for CustomShaderState {
 
     fn handle_event(
         &mut self,
-        data: StateData<'_, GameData<'_, '_>>,
+        _data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
         match &event {
@@ -161,7 +159,7 @@ impl SimpleState for CustomShaderState {
             }
             // Using the Mouse Wheel to control the scale
             StateEvent::Input(input) => {
-                if let InputEvent::MouseWheelMoved(dir) = input {
+                if let InputEvent::MouseWheelMoved(_dir) = input {
                     // let mut scale = data.world.write_resource::<CustomUniformArgs>();
                     // match dir {
                     //     ScrollDirection::ScrollUp => (*scale).scale *= 1.1,
@@ -180,7 +178,7 @@ fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
 
     let app_root = application_root_dir()?;
-    let display_config_path = app_root.join("config/display.ron");
+    let display_config_path = app_root.join("examples/config/display.ron");
     let assets_dir = app_root.join("examples/assets/");
 
     let game_data = GameDataBuilder::default()
@@ -196,7 +194,7 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderLyon::default()),
         )?;
 
-    let mut game = Application::new(assets_dir, CustomShaderState::default(), game_data)?;
+    let mut game = Application::new(assets_dir, BasicUsageState::default(), game_data)?;
 
     game.run();
     Ok(())

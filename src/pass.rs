@@ -1,13 +1,22 @@
+//! Description: 
+//! 
+//! A custom render pass for meshes created with Lyon. 
+//! 
+//! It is all fairly simple. It provides support for rendering multiple 
+//! util::Mesh(es), or if utils:ActiveMesh(entity) exits it just renderers 
+//! the single mesh.
+//! 
+//! Copyright © 2020 Benedict Gaster. All rights reserved.
+//! 
 use amethyst::{
     core::{
         ecs::{
-            DispatcherBuilder, Join, ReadStorage, SystemData, World,
+            Join, ReadStorage, SystemData, World,
         },
         math::{Vector2},
     },
     prelude::*,
     renderer::{
-        bundle::{RenderOrder, RenderPlan, RenderPlugin, Target},
         pipeline::{PipelineDescBuilder, PipelinesBuilder},
         rendy::{
             command::{QueueId, RenderPassEncoder},
@@ -27,9 +36,7 @@ use amethyst::{
     window::ScreenDimensions,
 };
 
-use amethyst_error::Error;
 use derivative::Derivative;
-
 
 use crate::utils::{Mesh, CustomArgs, PushConstant};
 
@@ -299,36 +306,3 @@ fn build_custom_pipeline<B: Backend>(
         Ok(mut pipes) => Ok((pipes.remove(0), pipeline_layout)),
     }
 }
-
-/// A [RenderPlugin] for our custom plugin
-#[derive(Default, Debug)]
-pub struct RenderLyon {}
-
-impl<B: Backend> RenderPlugin<B> for RenderLyon {
-    fn on_build<'a, 'b>(
-        &mut self,
-        world: &mut World,
-        _builder: &mut DispatcherBuilder<'a, 'b>,
-    ) -> Result<(), Error> {
-        // Add the required components to the world ECS
-        world.register::<Mesh>();
-        Ok(())
-    }
-
-    fn on_plan(
-        &mut self,
-        plan: &mut RenderPlan<B>,
-        _factory: &mut Factory<B>,
-        _world: &World,
-    ) -> Result<(), Error> {
-        plan.extend_target(Target::Main, |ctx| {
-            // Add our Description
-            ctx.add(RenderOrder::Transparent, DrawLyonDesc::new().builder())?;
-            Ok(())
-        });
-        Ok(())
-    }
-}
-
-
-

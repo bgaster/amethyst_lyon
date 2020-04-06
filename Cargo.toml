@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["Benedict Gaster <benedict.gaster@uwe.ac.uk>"]
 edition = "2018"
 
+[lib]
+name = "amethyst_lyon"
+path = "src/lib.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -36,3 +40,7 @@ shader-compiler = ["amethyst/shader-compiler"]
 
 [build-dependencies]
 glsl-to-spirv = "0.1.7"
+
+[[example]]
+name = "basic_usage"
+path = "examples/basic/main.rs"

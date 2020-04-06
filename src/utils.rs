@@ -1,3 +1,9 @@
+//! Description: 
+//! 
+//! Basic structures used for the Lyon render plugin.
+//! 
+//! Copyright © 2020 Benedict Gaster. All rights reserved.
+//! 
 use amethyst::{
     core::ecs::{Component, DenseVecStorage},
     core::{
