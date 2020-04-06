@@ -1,0 +1,10 @@
+/*!
+    @import /amethyst_window/src/config.rs#DisplayConfig
+    DisplayConfig
+*/
+
+(
+  dimensions: Some((640, 480)),
+  title: "Amethyst Lyon Example",
+  multisampling: 0,
+)
