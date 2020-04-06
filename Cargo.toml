@@ -7,20 +7,28 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-amethyst = { path = "./external/amethyst" }
-amethyst_error = { path = "./external/amethyst/amethyst_error", version = "0.5.0" }
-derivative = "1.0.3"
+#amethyst = { path = "./external/amethyst" }
+#amethyst_error = { path = "./external/amethyst/amethyst_error", version = "0.5.0" }
+# amethyst = "0.15.0"
+# amethyst_error = "0.5.0"
+amethyst = { git = "https://github.com/amethyst/amethyst" }
+amethyst_error = { git = "https://github.com/amethyst/amethyst" }
+derivative = "2.1.0"
 glsl-layout = "0.3.2"
-lyon = { path = "./external/lyon" }
+#lyon = { path = "./external/lyon" }
+lyon = "0.15.6"
 log = { version = "0.4.8", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 failure = "0.1.7"
 lazy_static = "1.4.0"
-nalgebra = "0.20.0"
+nalgebra = "0.21.0"
+
+# [dependencies.amethyst_error]
+# git = "https://github.com/amethyst/amethyst"
 
 [features]
 # default = ["vulkan"] # For linux Windows
-default = ["metal", "shader-compiler"] # For osx
+default = ["metal"] # For osx
 empty = ["amethyst/empty"]
 metal = ["amethyst/metal"]
 vulkan = ["amethyst/vulkan"]

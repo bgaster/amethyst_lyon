@@ -1,33 +1,16 @@
 use amethyst::{
-    core::ecs::{
-        Component, DenseVecStorage, DispatcherBuilder, Join, ReadStorage, SystemData, World,
-    },
-    prelude::*,
+    core::ecs::{Component, DenseVecStorage},
     core::{
-		math::{Vector2, Vector4, Vector5},
+		math::{Vector2, Vector4},
 	},
     renderer::{
-        bundle::{RenderOrder, RenderPlan, RenderPlugin, Target},
-        pipeline::{PipelineDescBuilder, PipelinesBuilder},
         rendy::{
-            command::{QueueId, RenderPassEncoder},
-            factory::Factory,
-            graph::{
-                render::{PrepareResult, RenderGroup, RenderGroupDesc},
-                GraphContext, NodeBuffer, NodeImage,
-            },
-            hal::{self, device::Device, format::Format, pso, pso::ShaderStageFlags},
+            hal::{format::Format},
             mesh::{AsVertex, VertexFormat},
-            shader::{Shader, SpirvShader},
         },
-        submodules::{DynamicIndexBuffer, DynamicVertexBuffer, DynamicUniform},
-        types::Backend,
-        util, ChangeDetection,
     },
 };
 
-use amethyst_error::Error;
-use derivative::Derivative;
 use glsl_layout::*;
 
 /// Vertex Arguments to pass into shader.
