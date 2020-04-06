@@ -28,7 +28,7 @@ use amethyst::{
 
 use amethyst_error::Error;
 
-use crate::utils::{Mesh};
+use crate::utils::{Mesh, ActiveMesh};
 use crate::pass::{DrawLyonDesc};
 
 #[derive(Default, Debug)]
@@ -42,6 +42,8 @@ impl<B: Backend> RenderPlugin<B> for RenderLyon {
     ) -> Result<(), Error> {
         // Add the required components to the world ECS
         world.register::<Mesh>();
+        world.register::<ActiveMesh>();
+        world.insert(ActiveMesh::default());
         Ok(())
     }
 

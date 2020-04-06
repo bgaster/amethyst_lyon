@@ -5,7 +5,7 @@
 //! Copyright © 2020 Benedict Gaster. All rights reserved.
 //! 
 use amethyst::{
-    core::ecs::{Component, DenseVecStorage},
+    core::ecs::{Component, DenseVecStorage, Entity},
     core::{
 		math::{Vector2, Vector4},
 	},
@@ -115,4 +115,13 @@ impl Mesh {
         }}));
         vec
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Default)]
+pub struct ActiveMesh {
+    pub entity: Option<Entity>,
+}
+
+impl Component for ActiveMesh {
+    type Storage = DenseVecStorage<Self>;
 }

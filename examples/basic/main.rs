@@ -6,12 +6,12 @@
 //! 
 use amethyst_lyon::{
     RenderLyon,
-    utils::{Mesh, VertexType}
+    utils::{Mesh, VertexType, ActiveMesh}
 };
 
 use amethyst::{
     input::{
-        is_close_requested, is_key_down, InputBundle, InputEvent, StringBindings,
+        is_close_requested, is_key_down, InputBundle, InputEvent, StringBindings, Button,
     },
     prelude::*,
     renderer::{
@@ -21,6 +21,7 @@ use amethyst::{
     },
     utils::application_root_dir,
     winit::VirtualKeyCode,
+    ecs::{Entity},
 };
 
 extern crate lyon;
@@ -29,7 +30,10 @@ use lyon::path::Path;
 use lyon::tessellation::*;
 
 #[derive(Debug, Default)]
-pub struct BasicUsageState;
+pub struct BasicUsageState {
+    mesh1: Option<Entity>,
+    mesh2: Option<Entity>,
+}
 
 impl SimpleState for BasicUsageState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
@@ -102,10 +106,10 @@ impl SimpleState for BasicUsageState {
             vertices: geometry.vertices,
             indices: geometry.indices,
         };
-        world
+        self.mesh1 = Some(world
             .create_entity()
             .with(mesh)
-            .build();
+            .build());
 
         //-------------------------------------
         // solid triangle
@@ -138,17 +142,19 @@ impl SimpleState for BasicUsageState {
             vertices: geometry.vertices,
             indices: geometry.indices,
         };
-        world
+        self.mesh2 = Some(world
             .create_entity()
             .with(mesh)
-            .build();        
+            .build());
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<'_, GameData<'_, '_>>,
+        mut data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
+        let StateData { mut world, .. } = data;
+
         match &event {
             StateEvent::Window(event) => {
                 if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
@@ -167,6 +173,25 @@ impl SimpleState for BasicUsageState {
                     //     _ => {}
                     // }
                 }
+
+                // Key1 implies mesh1 is the ActiveMesh and only that one is displayed
+                if let InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::Key1)) = input {
+                    let mut active_mesh = world.write_resource::<ActiveMesh>();
+                    *active_mesh = ActiveMesh { entity: self.mesh1 };
+                }
+
+                // Key1 implies mesh2 is the ActiveMesh and only that one is displyed
+                if let InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::Key2)) = input {
+                    let mut active_mesh = world.write_resource::<ActiveMesh>();
+                    *active_mesh = ActiveMesh { entity: self.mesh2 };
+                }
+
+                // Key0 implies there is no ActiveMesh and thus all meshs are displayed
+                if let InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::Key0)) = input {
+                    let mut active_mesh = world.write_resource::<ActiveMesh>();
+                    *active_mesh = ActiveMesh { entity: None };
+                }
+              
                 Trans::None
             }
             _ => Trans::None,

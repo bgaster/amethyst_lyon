@@ -38,7 +38,7 @@ use amethyst::{
 
 use derivative::Derivative;
 
-use crate::utils::{Mesh, CustomArgs, PushConstant};
+use crate::utils::{Mesh, CustomArgs, PushConstant, ActiveMesh};
 
 // Load SPIV shaders
 // Note: Shaders are pre-built using build.rs and just load binaries.
@@ -152,30 +152,57 @@ impl<B: Backend> RenderGroup<B, World> for DrawCustom<B> {
         let old_vertex_count = self.vertex_count;
         let old_index_count = self.index_count;
 
-        self.vertex_count = mesh.join().fold(0, |sum, mesh| sum + mesh.vertices.len());
-        self.index_count = mesh.join().fold(0, |sum, mesh| sum + mesh.indices.len());
-        let changed = old_vertex_count != self.vertex_count || old_index_count != self.index_count;
-
         let mut index_range = std::ops::Range::<u32> { start: 0, end: 0 };
 
         let mut vertices = Vec::with_capacity(self.vertex_count as usize);
 		let mut indices = Vec::with_capacity(self.index_count as usize);
 
-        for m in mesh.join() {
-            index_range.start = index_range.end;
-            index_range.end += m.indices.len() as u32;
-            
-            self.commands.push(DrawCmdOps {
-                vertex_range: std::ops::Range {
-                    start: vertices.len() as u32,
-					end: (vertices.len() + m.vertices.len()) as u32,
-                },
-                index_range: index_range.clone(),
-            });
+        // if ActiveMesh is set, then we render only that mesh
+        let active_mesh = world.read_resource::<ActiveMesh>();
+        if let Some(mesh_entity) = active_mesh.entity {
+            let mesh_read = world.read_storage::<Mesh>();
+            if let Some(m) = mesh_read.get(mesh_entity) {
+                self.vertex_count = m.vertices.len();
+                self.index_count = m.indices.len();
 
-            vertices.extend(m.get_args().iter().map(|v| (*v)).collect::<Vec<CustomArgs>>());
-			indices.extend(m.indices.iter().map(|v| (*v).into()).collect::<Vec<u16>>());
+                index_range.start = index_range.end;
+                index_range.end += m.indices.len() as u32;
+
+                self.commands.push(DrawCmdOps {
+                    vertex_range: std::ops::Range {
+                        start: vertices.len() as u32,
+                        end: (vertices.len() + m.vertices.len()) as u32,
+                    },
+                    index_range: index_range.clone(),
+                });
+
+                vertices.extend(m.get_args().iter().map(|v| (*v)).collect::<Vec<CustomArgs>>());
+                indices.extend(m.indices.iter().map(|v| (*v).into()).collect::<Vec<u16>>());
+            }
         }
+        else {
+            // ActiveMesh not set, so render all meshs
+            self.vertex_count = mesh.join().fold(0, |sum, mesh| sum + mesh.vertices.len());
+            self.index_count = mesh.join().fold(0, |sum, mesh| sum + mesh.indices.len());
+
+            for m in mesh.join() {
+                index_range.start = index_range.end;
+                index_range.end += m.indices.len() as u32;
+                
+                self.commands.push(DrawCmdOps {
+                    vertex_range: std::ops::Range {
+                        start: vertices.len() as u32,
+                        end: (vertices.len() + m.vertices.len()) as u32,
+                    },
+                    index_range: index_range.clone(),
+                });
+
+                vertices.extend(m.get_args().iter().map(|v| (*v)).collect::<Vec<CustomArgs>>());
+                indices.extend(m.indices.iter().map(|v| (*v).into()).collect::<Vec<u16>>());
+            }
+        }
+
+        let changed = old_vertex_count != self.vertex_count || old_index_count != self.index_count;
 
         self.vertex.write(factory, index, vertices.len() as u64, &[vertices.iter()]);
         self.index.write(factory, index, indices.len() as u64, &[indices.iter()]);
