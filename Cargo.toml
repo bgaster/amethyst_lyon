@@ -6,6 +6,11 @@ edition = "2018"
 description = "Amethyst Lyon crate"
 keywords = ["lyon", "vector graphics", "amethyst"]
 categories = ["game-engines"]
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+build = "build.rs"
+repository = "https://github.com/bgaster/amethyst_lyon"
+homepage = "https://github.com/bgaster/amethyst_lyon"
 
 [lib]
 name = "amethyst_lyon"
