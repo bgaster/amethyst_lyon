@@ -1,5 +1,4 @@
 //! Translate GLSL shader into SPIR-V at build time.
-//! Add libop1aif.a to the build.
 //! 
 extern crate glsl_to_spirv;
 

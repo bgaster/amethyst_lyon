@@ -87,16 +87,21 @@ impl Default for PushConstant {
 
 pub type IndexType = u16;
 
+/// Vertex information
 #[derive(Debug, Default)]
 pub struct VertexType {
+    /// 2D position of vertex
     pub position: [f32; 2],
+    /// Colour of vertex
     pub colour: [f32; 4],
 }
 
-/// Component for the triangles we wish to draw to the screen
+/// Component for the triangles to be drawn to the screen
 #[derive(Debug, Default)]
 pub struct Mesh {
+    /// list of vertices contained within mesh
     pub vertices: Vec<VertexType>,
+    /// indices for vertices of each triangle in mesh
     pub indices: Vec<IndexType>,  
 }
 
@@ -105,6 +110,7 @@ impl Component for Mesh {
 }
 
 impl Mesh {
+    /// Returns an vector of vertices expected by GLSL vert shader
     pub fn get_args(&self) -> Vec<CustomArgs> {
         let mut vec = Vec::new();
         vec.extend((0..self.vertices.len()).map(|i| {
@@ -117,8 +123,12 @@ impl Mesh {
     }
 }
 
+/// Active mesh resource, used by the renderer to choose 
+/// which Lyon mesh to render. If no active mesh is found, 
+/// then all Lyon meshes are rendered.
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct ActiveMesh {
+    /// Entity of mesh to be rendered
     pub entity: Option<Entity>,
 }
 

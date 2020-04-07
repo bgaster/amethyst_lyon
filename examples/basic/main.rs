@@ -5,7 +5,6 @@
 //! Copyright © 2020 Benedict Gaster. All rights reserved.
 //! 
 //! 
-
 use amethyst_lyon::{
     RenderLyon,
     utils::{Mesh, VertexType, ActiveMesh}

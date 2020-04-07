@@ -3,6 +3,9 @@ name = "amethyst_lyon"
 version = "0.1.0"
 authors = ["Benedict Gaster <benedict.gaster@uwe.ac.uk>"]
 edition = "2018"
+description = "Amethyst Lyon crate"
+keywords = ["lyon", "vector graphics", "amethyst"]
+categories = ["game-engines"]
 
 [lib]
 name = "amethyst_lyon"
@@ -13,10 +16,10 @@ path = "src/lib.rs"
 [dependencies]
 #amethyst = { path = "./external/amethyst" }
 #amethyst_error = { path = "./external/amethyst/amethyst_error", version = "0.5.0" }
-# amethyst = "0.15.0"
-# amethyst_error = "0.5.0"
-amethyst = { git = "https://github.com/amethyst/amethyst" }
-amethyst_error = { git = "https://github.com/amethyst/amethyst" }
+amethyst = "0.15.0"
+amethyst_error = "0.5.0"
+# amethyst = { git = "https://github.com/amethyst/amethyst" }
+# amethyst_error = { git = "https://github.com/amethyst/amethyst" }
 derivative = "2.1.0"
 glsl-layout = "0.3.2"
 #lyon = { path = "./external/lyon" }

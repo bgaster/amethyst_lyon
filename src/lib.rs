@@ -34,6 +34,7 @@ use crate::pass::{DrawLyonDesc};
 #[derive(Default, Debug)]
 pub struct RenderLyon {}
 
+/// Render plugin for Lyon tessellator
 impl<B: Backend> RenderPlugin<B> for RenderLyon {
     fn on_build<'a, 'b>(
         &mut self,

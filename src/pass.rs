@@ -105,14 +105,14 @@ impl<B: Backend> RenderGroupDesc<B, World> for DrawLyonDesc {
     }
 }
 
+/// Draw commands to be rendered as individual draw calls
 #[derive(Debug)]
 struct DrawCmdOps {
 	vertex_range: std::ops::Range<u32>,
 	index_range: std::ops::Range<u32>,
-	//scissor: hal::pso::Rect,
 }
 
-/// Draws triangles to the screen.
+/// Draws meshes to the screen.
 #[derive(Debug)]
 pub struct DrawCustom<B: Backend> {
     pipeline: B::GraphicsPipeline,
