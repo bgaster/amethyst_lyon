@@ -15,26 +15,19 @@ use amethyst::{
     input::{
         is_close_requested, is_key_down, InputBundle, InputEvent, StringBindings, Button,
     },
-    core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle, Time},
+    core::{transform::TransformBundle},
     prelude::*,
-    derive::SystemDesc,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow}, 
         types::DefaultBackend, 
         RenderingBundle,
     },
     winit::VirtualKeyCode,
-    window::ScreenDimensions,
-    ecs::{Entity},
-    ecs::prelude::{System, SystemData, WorldExt, Write},
+    ecs::prelude::{Entity, WorldExt},
     assets::{Loader},
-    assets::{PrefabLoader, PrefabLoaderSystemDesc, Processor, RonFormat},
-    ui::{RenderUi, UiBundle, UiCreator, UiEvent, UiFinder, UiText, UiTextData, LineMode},
+    ui::{RenderUi, UiBundle, UiText, LineMode},
     ui::{Anchor, TtfFormat, UiTransform},
-    utils::{
-        application_root_dir,
-    },
-    shrev::{EventChannel, ReaderId},
+    utils::{application_root_dir},
 };
 
 extern crate lyon;
@@ -197,10 +190,10 @@ impl SimpleState for BasicUsageState {
 
     fn handle_event(
         &mut self,
-        mut data: StateData<'_, GameData<'_, '_>>,
+        data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
-        let StateData { mut world, .. } = data;
+        let StateData { world, .. } = data;
 
         match &event {
             StateEvent::Window(event) => {
@@ -210,17 +203,8 @@ impl SimpleState for BasicUsageState {
                     Trans::None
                 }
             }
-            // Using the Mouse Wheel to control the scale
+            // 1,2 use just mesh1 and mesh2, respectively. 0 uses both.
             StateEvent::Input(input) => {
-                if let InputEvent::MouseWheelMoved(_dir) = input {
-                    // let mut scale = data.world.write_resource::<CustomUniformArgs>();
-                    // match dir {
-                    //     ScrollDirection::ScrollUp => (*scale).scale *= 1.1,
-                    //     ScrollDirection::ScrollDown => (*scale).scale /= 1.1,
-                    //     _ => {}
-                    // }
-                }
-
                 // Key1 implies mesh1 is the ActiveMesh and only that one is displayed
                 if let InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::Key1)) = input {
                     let mut active_mesh = world.write_resource::<ActiveMesh>();
@@ -257,10 +241,6 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new())?
         .with_bundle(UiBundle::<StringBindings>::new())?
-        //.with_bundle(InputBundle::<StringBindings>::new())?
-        //.with_bundle(UiBundle::<StringBindings>::new())?
-        //.with_bundle(UiBundle::<StringBindings>::new())?
-        .with_system_desc(UiEventHandlerSystemDesc::default(), "ui_event_handler", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
@@ -276,29 +256,4 @@ fn main() -> amethyst::Result<()> {
 
     game.run();
     Ok(())
-}
-
-/// This shows how to handle UI events.
-#[derive(SystemDesc)]
-#[system_desc(name(UiEventHandlerSystemDesc))]
-pub struct UiEventHandlerSystem {
-    #[system_desc(event_channel_reader)]
-    reader_id: ReaderId<UiEvent>,
-}
-
-impl UiEventHandlerSystem {
-    pub fn new(reader_id: ReaderId<UiEvent>) -> Self {
-        Self { reader_id }
-    }
-}
-
-impl<'a> System<'a> for UiEventHandlerSystem {
-    type SystemData = Write<'a, EventChannel<UiEvent>>;
-
-    fn run(&mut self, events: Self::SystemData) {
-        // Reader id was just initialized above if empty
-        for ev in events.read(&mut self.reader_id) {
-            //info!("[SYSTEM] You just interacted with a ui element: {:?}", ev);
-        }
-    }
 }
