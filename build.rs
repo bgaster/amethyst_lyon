@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<Error>> {
     use glsl_to_spirv::ShaderType;
 
     // Tell the build script to add libop1aif.a to the build
-    let mut project_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let mut _project_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
 
     // Tell the build script to only run again if we change our source shaders
     println!("cargo:rerun-if-changed=source_assets/shaders");

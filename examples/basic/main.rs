@@ -4,6 +4,8 @@
 //! 
 //! Copyright © 2020 Benedict Gaster. All rights reserved.
 //! 
+//! 
+
 use amethyst_lyon::{
     RenderLyon,
     utils::{Mesh, VertexType, ActiveMesh}
@@ -13,21 +15,36 @@ use amethyst::{
     input::{
         is_close_requested, is_key_down, InputBundle, InputEvent, StringBindings, Button,
     },
+    core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle, Time},
     prelude::*,
+    derive::SystemDesc,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow}, 
         types::DefaultBackend, 
         RenderingBundle,
     },
-    utils::application_root_dir,
     winit::VirtualKeyCode,
+    window::ScreenDimensions,
     ecs::{Entity},
+    ecs::prelude::{System, SystemData, WorldExt, Write},
+    assets::{Loader},
+    assets::{PrefabLoader, PrefabLoaderSystemDesc, Processor, RonFormat},
+    ui::{RenderUi, UiBundle, UiCreator, UiEvent, UiFinder, UiText, UiTextData, LineMode},
+    ui::{Anchor, TtfFormat, UiTransform},
+    utils::{
+        application_root_dir,
+    },
+    shrev::{EventChannel, ReaderId},
 };
 
 extern crate lyon;
 use lyon::math::{point, Point};
 use lyon::path::Path;
 use lyon::tessellation::*;
+
+pub struct Text {
+    pub text: Entity,
+}
 
 #[derive(Debug, Default)]
 pub struct BasicUsageState {
@@ -39,6 +56,36 @@ impl SimpleState for BasicUsageState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
+        // Add some text describing controls
+        let font = world.read_resource::<Loader>().load(
+            "font/square.ttf",
+            TtfFormat,
+            (),
+            &world.read_resource(),
+        );
+
+        let text_transform = UiTransform::new(
+            "tf".to_string(), Anchor::TopMiddle, Anchor::TopLeft,
+            -150., -50., 1., 400., 150.,
+        );
+    
+        let mut text = UiText::new(
+            font.clone(),
+            "Press 1 to display red shapes\nPress 2 to display green shapes\nPress 0 to display all shapes".to_string(),
+            [0., 0., 0., 1.],
+            25.,
+        );
+
+        text.line_mode = LineMode::Wrap;
+        text.align = Anchor::TopLeft;
+
+        world
+            .create_entity()
+            .with(text_transform)
+            .with(text)
+            .build();
+
+        
         // Tesserlate a few shapes and add to the world. The first two are attached to the same
         // mesh, while the 2nd one is added to another one.
 
@@ -207,7 +254,13 @@ fn main() -> amethyst::Result<()> {
     let assets_dir = app_root.join("examples/assets/");
 
     let game_data = GameDataBuilder::default()
+        .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new())?
+        .with_bundle(UiBundle::<StringBindings>::new())?
+        //.with_bundle(InputBundle::<StringBindings>::new())?
+        //.with_bundle(UiBundle::<StringBindings>::new())?
+        //.with_bundle(UiBundle::<StringBindings>::new())?
+        .with_system_desc(UiEventHandlerSystemDesc::default(), "ui_event_handler", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
@@ -215,12 +268,37 @@ fn main() -> amethyst::Result<()> {
                         .with_clear([1.0, 1.0, 1.0, 1.0]),
                 )
                 .with_plugin(RenderFlat2D::default())
-                // Add our custom render plugin to the rendering bundle.
-                .with_plugin(RenderLyon::default()),
+                .with_plugin(RenderUi::default())
+                .with_plugin(RenderLyon::default()),     
         )?;
 
     let mut game = Application::new(assets_dir, BasicUsageState::default(), game_data)?;
 
     game.run();
     Ok(())
+}
+
+/// This shows how to handle UI events.
+#[derive(SystemDesc)]
+#[system_desc(name(UiEventHandlerSystemDesc))]
+pub struct UiEventHandlerSystem {
+    #[system_desc(event_channel_reader)]
+    reader_id: ReaderId<UiEvent>,
+}
+
+impl UiEventHandlerSystem {
+    pub fn new(reader_id: ReaderId<UiEvent>) -> Self {
+        Self { reader_id }
+    }
+}
+
+impl<'a> System<'a> for UiEventHandlerSystem {
+    type SystemData = Write<'a, EventChannel<UiEvent>>;
+
+    fn run(&mut self, events: Self::SystemData) {
+        // Reader id was just initialized above if empty
+        for ev in events.read(&mut self.reader_id) {
+            //info!("[SYSTEM] You just interacted with a ui element: {:?}", ev);
+        }
+    }
 }
