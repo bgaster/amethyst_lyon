@@ -1,3 +1,6 @@
+[![Latest release on crates.io](https://meritbadge.herokuapp.com/amethyst-lyon)](https://crates.io/crates/amethyst-lyon)
+[![Documentation on docs.rs](https://docs.rs/amethyst-lyon/badge.svg)](https://docs.rs/amethyst-lyon)
+
  # amethyst-lyon
 
 Amethyst-lyon provides integration for the [lyon crate](https://github.com/nical/lyon) within the [Amethyst](https://amethyst.rs) game engine.

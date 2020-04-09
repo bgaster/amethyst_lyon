@@ -97,12 +97,24 @@ pub struct VertexType {
 }
 
 /// Component for the triangles to be drawn to the screen
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Mesh {
     /// list of vertices contained within mesh
     pub vertices: Vec<VertexType>,
     /// indices for vertices of each triangle in mesh
-    pub indices: Vec<IndexType>,  
+    pub indices: Vec<IndexType>, 
+    /// scaling factor to be applied to all vertices
+    pub scale: Vector2<f32>,
+}
+
+impl Default for Mesh {
+    fn default() -> Self {
+        Self {
+            vertices: Vec::new(),
+            indices: Vec::new(),
+            scale: Vector2::new(1.0, 1.0),
+        }
+    }
 }
 
 impl Component for Mesh {

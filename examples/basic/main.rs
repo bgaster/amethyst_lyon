@@ -144,6 +144,7 @@ impl SimpleState for BasicUsageState {
         let mesh = Mesh {
             vertices: geometry.vertices,
             indices: geometry.indices,
+            ..Mesh::default()
         };
         self.mesh1 = Some(world
             .create_entity()
@@ -180,6 +181,7 @@ impl SimpleState for BasicUsageState {
         let mesh = Mesh {
             vertices: geometry.vertices,
             indices: geometry.indices,
+            ..Mesh::default()
         };
         self.mesh2 = Some(world
             .create_entity()

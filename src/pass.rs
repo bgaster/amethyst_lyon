@@ -109,7 +109,8 @@ impl<B: Backend> RenderGroupDesc<B, World> for DrawLyonDesc {
 #[derive(Debug)]
 struct DrawCmdOps {
 	vertex_range: std::ops::Range<u32>,
-	index_range: std::ops::Range<u32>,
+    index_range: std::ops::Range<u32>,
+    scale: Vector2<f32>,
 }
 
 /// Draws meshes to the screen.
@@ -174,6 +175,7 @@ impl<B: Backend> RenderGroup<B, World> for DrawCustom<B> {
                         end: (vertices.len() + m.vertices.len()) as u32,
                     },
                     index_range: index_range.clone(),
+                    scale: m.scale,
                 });
 
                 vertices.extend(m.get_args().iter().map(|v| (*v)).collect::<Vec<CustomArgs>>());
@@ -195,6 +197,7 @@ impl<B: Backend> RenderGroup<B, World> for DrawCustom<B> {
                         end: (vertices.len() + m.vertices.len()) as u32,
                     },
                     index_range: index_range.clone(),
+                    scale: m.scale,
                 });
 
                 vertices.extend(m.get_args().iter().map(|v| (*v)).collect::<Vec<CustomArgs>>());
@@ -234,11 +237,14 @@ impl<B: Backend> RenderGroup<B, World> for DrawCustom<B> {
         for draw in &self.commands {
             // Draw the vertices
             unsafe {
+                let mut constant = self.constant.clone();
+                let scale = constant.scale();
+                constant.set_scale(Vector2::new(draw.scale.x * scale.x, draw.scale.y * scale.y));
                 encoder.push_constants(
                     layout,
                     pso::ShaderStageFlags::VERTEX,
                     0,
-                    hal::memory::cast_slice::<f32, u32>(self.constant.raw()),
+                    hal::memory::cast_slice::<f32, u32>(constant.raw()),
                 );
 
                 encoder.draw_indexed(

@@ -52,3 +52,7 @@ glsl-to-spirv = "0.1.7"
 [[example]]
 name = "basic_usage"
 path = "examples/basic/main.rs"
+
+[[example]]
+name = "muses_logo"
+path = "examples/muses_logo/main.rs"
