@@ -8,7 +8,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     use glsl_to_spirv::ShaderType;
 
     // Tell the build script to only run again if we change our source shaders
-    println!("cargo:rerun-if-changed=source_assets/shaders");
+    println!("cargo:rerun-if-changed=src_assets/shaders");
 
     // Create destination path if necessary
     std::fs::create_dir_all("assets/gen/shaders")?;

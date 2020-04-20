@@ -35,16 +35,18 @@ failure = "0.1.7"
 lazy_static = "1.4.0"
 nalgebra = "0.21.0"
 
+
 # [dependencies.amethyst_error]
 # git = "https://github.com/amethyst/amethyst"
 
 [features]
 # default = ["vulkan"] # For linux Windows
-default = ["metal"] # For osx
+default = [] # For osx
 empty = ["amethyst/empty"]
 metal = ["amethyst/metal"]
 vulkan = ["amethyst/vulkan"]
-shader-compiler = ["amethyst/shader-compiler"]
+#physics = ["physics2d"]
+
 
 [build-dependencies]
 glsl-to-spirv = "0.1.7"
@@ -56,3 +58,7 @@ path = "examples/basic/main.rs"
 [[example]]
 name = "muses_logo"
 path = "examples/muses_logo/main.rs"
+
+[[example]]
+name = "rebound"
+path = "examples/rebound/main.rs"
